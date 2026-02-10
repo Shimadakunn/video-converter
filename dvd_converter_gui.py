@@ -12,6 +12,18 @@ from tkinter import filedialog, messagebox, ttk
 from pathlib import Path
 
 
+def get_ffmpeg_path() -> str:
+    """Get path to ffmpeg executable, handling PyInstaller bundling."""
+    if getattr(sys, "frozen", False):
+        # Running as PyInstaller bundle - ffmpeg is in the temp extraction folder
+        bundle_dir = Path(sys._MEIPASS)
+        ffmpeg_path = bundle_dir / "ffmpeg.exe"
+        if ffmpeg_path.exists():
+            return str(ffmpeg_path)
+    # Fallback to system PATH
+    return "ffmpeg"
+
+
 class DVDConverterApp:
     def __init__(self, root: tk.Tk):
         self.root = root
@@ -164,7 +176,7 @@ class DVDConverterApp:
         """Check if FFmpeg is available."""
         try:
             subprocess.run(
-                ["ffmpeg", "-version"],
+                [get_ffmpeg_path(), "-version"],
                 capture_output=True,
                 check=True,
                 creationflags=subprocess.CREATE_NO_WINDOW if sys.platform == "win32" else 0
@@ -188,7 +200,7 @@ class DVDConverterApp:
             output_path = output_dir / (vob.stem + ".mp4")
 
             cmd = [
-                "ffmpeg",
+                get_ffmpeg_path(),
                 "-i", str(vob),
                 "-c:v", "libx264",
                 "-preset", "medium",
