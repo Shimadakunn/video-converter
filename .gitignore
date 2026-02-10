@@ -1,0 +1,19 @@
+# Video files
+videos/
+converted/
+*.VOB
+*.IFO
+*.BUP
+*.mp4
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+build/
+dist/
+*.spec
+
+# OS
+.DS_Store
+Thumbs.db
